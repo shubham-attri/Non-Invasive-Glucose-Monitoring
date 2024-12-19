@@ -21,7 +21,6 @@ bool notifyEnabled = false;  // Flag for enabling notifications
 // Setup Function
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
   Serial.println("Starting BLE Peripheral...");
 
   // Initialize Bluefruit
@@ -98,11 +97,16 @@ void writeCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
   } 
   if(len == 1)
   {
-    if((int8_t)data[0] == 1)
+    
+    if((int8_t)data[0] == 2)
     {
-      sendNotification(millis());
+      Serial.println("Received 02");
+      sendNotification(921324);
     }
-
+  }
+  if (len == 4)
+  {
+    Serial.println("Received timestmap");
   }
   // else if (len == 6) {
   //   Serial.print("Received Timestamp (12 bytes): ");
@@ -123,17 +127,20 @@ void writeCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
 void sendNotification(uint32_t timestamp) {
   // Fill the NIRSpectrographyData packet
   dataPacket.timestamp = timestamp;
-  for (int i = 0; i < 18; i++) {
-    dataPacket.sensor[i] = random(0, 1024);  // Random values for sensor
-  }
+  for(int j=0;j<288;j++)
+  {
+    for (int i = 0; i < 18; i++) {
+      dataPacket.sensor[i] = random(0, 1024);  // Random values for sensor
+    }
 
-  // Send the notification
-  notifyChar.notify((uint8_t*)&dataPacket, sizeof(dataPacket));
-  Serial.println("Notification Sent:");
-  Serial.print("Timestamp: "); Serial.println(dataPacket.timestamp);
-  for (int i = 0; i < 18; i++) {
-    Serial.print("Sensor["); Serial.print(i); Serial.print("] = ");
-    Serial.println(dataPacket.sensor[i]);
+    // Send the notification
+    notifyChar.notify((uint8_t*)&dataPacket, sizeof(dataPacket));
+    Serial.println("Notification Sent:");
+    Serial.print("Timestamp: "); Serial.println(dataPacket.timestamp);
+    for (int i = 0; i < 18; i++) {
+      Serial.print("Sensor["); Serial.print(i); Serial.print("] = ");
+      Serial.println(dataPacket.sensor[i]);
+    }
   }
 }
 
