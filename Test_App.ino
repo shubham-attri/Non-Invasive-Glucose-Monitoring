@@ -107,6 +107,7 @@ void writeCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
   if (len == 4)
   {
     Serial.println("Received timestmap");
+    sendNotification(921324);
   }
   // else if (len == 6) {
   //   Serial.print("Received Timestamp (12 bytes): ");
